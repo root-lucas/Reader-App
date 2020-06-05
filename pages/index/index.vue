@@ -1,9 +1,6 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view class="text-area">
-			<text class="title">{{title}}</text>
-		</view>
+	<view>
+		index page212
 	</view>
 </template>
 
@@ -15,7 +12,18 @@
 			}
 		},
 		onLoad() {
-
+			uni.request({
+				// 请求后端：https://192.168...index.php?token=api2020&c=index&m=member
+				url: this.apiServer+'index&m=member',
+				method: 'GET',
+				success: res => {
+					console.log('请求成功 = ',JSON.stringify(res));
+				},
+				fail:(e)=>{
+					console.log('请求失败 = ',JSON.stringify(e));
+				},
+				complete:()=>{}
+			});
 		},
 		methods: {
 
@@ -24,29 +32,4 @@
 </script>
 
 <style>
-	.content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin-top: 200rpx;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 50rpx;
-	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
 </style>
