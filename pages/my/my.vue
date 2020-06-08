@@ -76,6 +76,45 @@
 			});
 		},
 		methods:{
+			editArt : function(e){
+				let artId = e.currentTarget.dataset.artid;
+				uni.navigateTo({
+					url:"../editArt/editArt?artId="+artId
+				});
+			},
+			removeArt : function(e){
+				var artId = e.currentTarget.dataset.artid;
+				var index = e.currentTarget.dataset.index;
+				uni.showModal({
+					title:"提示",
+					content:"确定要删除吗?",
+					success:function(e){
+						if(e.confirm == true){
+							uni.request({
+								url: '',
+								method: 'GET',
+								url: _self.apiServer + 'my&m=removeArt',
+								method: 'POST',
+								header: {'content-type' : "application/x-www-form-urlencoded"},
+								data: {
+									uid : loginRes[0],
+									random : loginRes[1],
+									artId : artId
+								},
+								success: res => {
+									console.log(res);
+									if(res.data.status == 'ok'){
+										uni.showToast({title: "已删除", icon:"none"});
+										_self.arts.splice(index, 1);
+									}else{
+										uni.showToast({title: "删除失败", icon:"none"});
+									}
+								}
+							});
+						}
+					}
+				});
+			},
 			getArtList : function(){
 				if(this.loadMore != '点击加载更多'){return ;}
 				this.loadMore = '加载中...';
