@@ -26,6 +26,7 @@ Vue.prototype.checkLogin = function(backpage, backtype){
 var APITOKEN  = 'api2020';
 // 这里的IP地址可以填你自己的局域网地址或域名地址
 Vue.prototype.apiServer='http://192.168.1.101/index.php?token='+APITOKEN+'&c=';
+Vue.prototype.staticServer = 'http://192.168.1.101/';
 
 App.mpType = 'app'
 

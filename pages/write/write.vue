@@ -33,12 +33,12 @@
             </view>
         </view>
         <!-- 提交按钮 -->
-        <view class="submitNow" v-if="artList.length > 0">发布文章</view>
+        <view class="submitNow" v-if="artList.length > 0" @tap="submitNow">发布文章</view>
     </view>
 </template>
 <script>
 	let _self, loginRes;
-	// let signModel = require('../../commons/sign.js');
+	let signModel = require('../../commons/sign.js');
 	export default {
 		data() {
 			return {
@@ -58,7 +58,7 @@
 		onLoad:function() {
 			// 使用 main.js 定义的全局方法来检查用户是否登录
 			loginRes = this.checkLogin('./write/write',2)
-			// signModel.sign(this.apiServer);
+			signModel.sign(this.apiServer);
 			_self = this;
 			// 无登录则返回空
 			if(!loginRes){return false;}
@@ -93,7 +93,6 @@
 						break;
 					}
 				}
-				console.log('sendindex = ', sedIndex)
 				this.currentCateIndex = sedIndex;
 			},
 			removeImg : function(e){
@@ -119,6 +118,97 @@
 						}
 					}
 				});
+			},
+			submitNow : function(){
+				// 数据验证
+				if(this.title.length < 2){uni.showToast({title:'请输入标题', icon:"none"}); return ;}
+				if(this.artList.length < 1){uni.showToast({title:'请填写文章内容', icon:"none"}); return ;}
+				if(this.sedCateIndex < 1){uni.showToast({title:'请选择分类', icon:"none"}); return ;}
+				// 上传图片 一次一个多次上传 [ 递归函数 ]
+				// 上传完成后整体提交数据
+				// 首先整理一下需要上传的图片
+				// this.needUploadImg = [{tmpurl : 临时地址, index : 数据索引}]
+				this.needUploadImg = [];
+				for(var i = 0; i < this.artList.length; i++){
+					if(this.artList[i].type == 'image'){
+						this.needUploadImg.push({"tmpurl" : this.artList[i].content , "indexID" : i});
+					}
+				}
+				this.uploadImg();
+			},
+			uploadImg : function(){
+				// 如果没有图片 或者已经上传完成 则执行提交
+				if(this.needUploadImg.length < 1 || this.uploadIndex >=  this.needUploadImg.length){
+					uni.showLoading({title:"正在提交"});
+					// 将信息整合后提交到服务器
+					var sign = uni.getStorageSync('sign');
+					uni.request({
+						url: this.apiServer + 'art&m=add',
+						method: 'POST',
+						header: {'content-type' : "application/x-www-form-urlencoded"},
+						data: {
+							title   : _self.title,
+							content : JSON.stringify(_self.artList),
+							uid     : loginRes[0],
+							random  : loginRes[1],
+							cate    : _self.sedCateIndex,
+							sign    : sign
+						},
+						success: res => {
+							console.log(res);
+							if(res.data.status == 'ok'){
+								uni.showToast({title:"提交成功", icon:"none"});
+								_self.artList = [];
+								// 清空数据
+								signModel.sign(_self.apiServer);
+								// 防止数据缓存
+								_self.currentCateIndex = 0;
+								_self.sedCateIndex     = 0;
+								_self.needUploadImg    = [];
+								_self.title            = '';
+								setTimeout(function(){
+									uni.switchTab({
+										url:'../my/my'
+									})
+								}, 1000);
+							}else{
+								uni.showToast({title:res.data.data, icon:"none"});
+							}
+						},
+						fail: (res) => {
+							
+						},
+						complete: () => {
+							
+						}
+					});
+					return ;
+				}
+				// 上传图片
+				uni.showLoading({title:"上传图片"});
+				var uploader = uni.uploadFile({
+					url      : _self.apiServer+'uploadImg&m=index',
+					filePath : _self.needUploadImg[_self.uploadIndex].tmpurl,
+					name     : 'file',
+					success: (uploadFileRes) => {
+						uploadFileRes = JSON.parse(uploadFileRes.data);
+						if(uploadFileRes.status != 'ok'){
+							console.log(uploadFileRes);
+							uni.showToast({title:"上传图片失败,请重试!", icon:"none"});
+							return false;
+						}
+						// 将已经上传的文件地址赋值给文章数据
+						var index = _self.needUploadImg[_self.uploadIndex].indexID;
+						_self.artList[index].content = _self.staticServer + uploadFileRes.data;
+						console.log(_self.artList); 
+						_self.uploadIndex ++;
+						// 递归上传
+						setTimeout(function(){_self.uploadImg();}, 1000);
+					},
+					fail: () => {
+						uni.showToast({title:"上传图片失败,请重试!", icon:"none"});
+					}
+				})
 			},
 			submit : function(res){
 				console.log('submit = ',this.artList)
