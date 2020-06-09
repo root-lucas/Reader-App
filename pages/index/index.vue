@@ -17,7 +17,7 @@
                     </view>
                 </navigator>
                 <!-- 三张图 -->
-                <navigator v-if="item.art_content.length >= 3" url="'../info/info?artid='+item.art_id">
+                <navigator v-if="item.art_content.length >= 3" :url="'../info/info?artid='+item.art_id">
                     <view class="grace-news-list-img-news">
                         <view class="grace-news-list-title-main">{{item.art_title}}</view>
                         <view class="grace-news-list-imgs">

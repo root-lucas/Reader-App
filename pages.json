@@ -23,6 +23,10 @@
             "path" : "pages/editArt/editArt",
             "style" : {}
         }
+        ,{
+            "path" : "pages/info/info",
+            "style" : {}
+        }
     ],
     "globalStyle" : {
         "navigationBarTextStyle" : "black",
