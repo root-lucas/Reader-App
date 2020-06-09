@@ -59,7 +59,7 @@ export default {
 		_self = this;
 		artId  = option.artId;
 		signModel.sign(this.apiServer);
-        loginRes = this.checkLogin('../my/my', '2');
+        loginRes = this.checkLogin('../my/my', 2);
         if(!loginRes){return false;}
 		// 加载要编辑的文章
 		uni.request({

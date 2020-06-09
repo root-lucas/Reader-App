@@ -34,6 +34,7 @@
 
 <script>
 	let _self, cate = 0, page = 1;
+	let sign = require('../../commons/sign.js');
 	export default {
 		data() {
 			return {
@@ -44,6 +45,7 @@
 		},
 		onLoad() {
 			_self = this;
+			sign.sign(this.apiServer);
 			// 加载文章分类
 			uni.request({
 				url: this.apiServer+'category&m=index',

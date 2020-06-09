@@ -1,6 +1,10 @@
 <template>
     <view class="grace-padding">
         <view class="myface"><image :src="myFace" mode="widthFix"></image></view>
+		<view style="text-align:center; margin:10px 0;">
+			<view style="margin-bottom: 10px;">{{user.u_name}}</view>
+			<text style="color: #888888;" @tap="logoff">注销</text>
+		</view>
         <view class="grace-box-banner" style="margin:30rpx 0;">
             <view class="garce-items">
                 <view class="line1">{{user.artCount}}</text></view>
@@ -47,13 +51,15 @@
 		onLoad:function() {
 			_self = this;
 			// 使用 main.js 定义的全局方法来检查用户是否登录
-			loginRes = this.checkLogin('./my/my',2)
+			loginRes = this.checkLogin("../my/my",2)
 			// console.log('loginRes = ',loginRes)
 			// 尚未登陆则跳转至login.vue
-			if(!loginRes){return;}
+			if(!loginRes){return false;}
 			this.myFace = loginRes[3];
 		},
 		onShow:function(){
+			loginRes = this.checkLogin("../my/my",2)
+			if(!loginRes){return false;}
 			//加载我的文章
 			this.arts = [];
 			page = 1;
@@ -76,6 +82,19 @@
 			});
 		},
 		methods:{
+			logoff : function(){
+				uni.removeStorageSync('SUID');
+				uni.removeStorageSync('SRAND');
+				uni.showToast({
+					title:"您已经退出悦读",
+					icon: "none"
+				});
+				setTimeout(function(){
+					uni.switchTab({
+						url:'../index/index'
+					});
+				}, 1000);
+			},
 			editArt : function(e){
 				let artId = e.currentTarget.dataset.artid;
 				uni.navigateTo({

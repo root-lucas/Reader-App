@@ -43,12 +43,13 @@
 							uni.setStorageSync('SNAME', res.data.u_name + '');
 							uni.setStorageSync('SFACE', res.data.u_face + '');
 							// 跳转
-							if(pageOptions.backtype == 1){
+							if(pageOptions.backtype === 1){
 								// navigateTo, redirectTo 只能打开非 tabBar 页面
 								uni.redirectTo({url:pageOptions.backpage});
 							}else{
 								// switchTab 只能打开 tabBar 页面。
-								uni.switchTab({url:pageOptions.backpage});
+								setTimeout(()=>{uni.switchTab({url:pageOptions.backpage});},2000)
+								
 							}
 						}else{
 							uni.showToast({title:res.data});
@@ -118,6 +119,7 @@
 									// 登录成功 记录会员信息到本地缓存
 									if(res.status == 'ok'){
 										uni.showToast({title:"登录成功"});
+										console.log('options.backpage1 App = ',options.backpage)
 										// 将数据库的授权信息缓存到本地，避免每次都需要重新授权
 										uni.setStorageSync('SUID' , res.data.u_id + '');
 										uni.setStorageSync('SRAND', res.data.u_random + '');
@@ -141,7 +143,7 @@
 						},
 						fail:()=>{
 							uni.showToast({title:"微信登录授权失败",icon:"none"});
-							// uni.hideLoading();
+							uni.hideLoading();
 						}
 					})
 				},
