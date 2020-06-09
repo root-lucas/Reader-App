@@ -166,6 +166,8 @@
 								_self.sedCateIndex     = 0;
 								_self.needUploadImg    = [];
 								_self.title            = '';
+								// 必需重置
+								_self.uploadIndex = 0
 								setTimeout(function(){
 									uni.switchTab({
 										url:'../my/my'
